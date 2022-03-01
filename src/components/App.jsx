@@ -1,0 +1,62 @@
+import React, { Component } from 'react';
+import contacts from './data/contacts.json';
+import Section from './Section';
+import ContactForm from './ContactForm';
+import Filter from './Filter';
+import ContactList from './ContactList';
+
+class App extends Component {
+  state = {
+    contacts: contacts,
+    filter: '',
+  };
+
+  deleteContact = contactId => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
+    }));
+  };
+
+  formSubmitHandler = data => {
+    this.state.contacts.find(contact => contact.name.includes(data.name))
+      ? alert(`${data.name} is already in contacts`)
+      : this.setState(prevState => ({
+          contacts: [data, ...prevState.contacts],
+        }));
+  };
+
+  filterForm = e => {
+    this.setState({ filter: e.currentTarget.value });
+  };
+
+  findContact = () => {
+    const { filter, contacts } = this.state;
+    const filterLowerCase = filter.toLowerCase();
+
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filterLowerCase)
+    );
+  };
+
+  render() {
+    const filterData = this.findContact();
+
+    return (
+      <>
+        <Section title="Phonebook">
+          <ContactForm onSubmit={this.formSubmitHandler} />
+        </Section>
+
+        <Section title="Contacts">
+          <Filter value={this.state.filter} onChange={this.filterForm} />
+          <ContactList
+            contacts={filterData}
+            onDeleteContact={this.deleteContact}
+          />
+        </Section>
+      </>
+    );
+  }
+}
+
+export default App;
