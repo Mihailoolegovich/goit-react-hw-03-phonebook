@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import contacts from './data/contacts.json';
 import Section from './Section';
 import ContactForm from './ContactForm';
 import Filter from './Filter';
@@ -7,7 +6,7 @@ import ContactList from './ContactList';
 
 class App extends Component {
   state = {
-    contacts: contacts,
+    contacts: [],
     filter: '',
   };
 
@@ -37,6 +36,19 @@ class App extends Component {
       contact.name.toLowerCase().includes(filterLowerCase)
     );
   };
+
+  componentDidMount() {
+    const data = JSON.parse(localStorage.getItem('contacts'));
+    if (data) {
+      this.setState({ contacts: data });
+    }
+  }
+
+  componentDidUpdate(prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   render() {
     const filterData = this.findContact();
